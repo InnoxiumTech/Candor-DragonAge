@@ -1,0 +1,53 @@
+plugins {
+
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.0'
+}
+
+group 'uk.co.innoxium.candor'
+version 'snapshot'
+
+repositories {
+
+    jcenter()
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+
+    maven {
+
+        name "Candor Bintray"
+        url "https://dl.bintray.com/candor/candor-alpha"
+    }
+
+    maven {
+
+        name "Cybernize Bintray"
+        url "https://dl.bintray.com/candor/cybernize"
+    }
+}
+
+dependencies {
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+
+    implementation 'me.shadowchild.candor:candor-full:0.1.4'
+
+    implementation 'me.shadowchild.cybernize:cybernize:1.1.1'
+    implementation 'com.electronwill.night-config:toml:3.6.3'
+
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.guava:guava:29.0-jre'
+    implementation "org.apache.commons:commons-lang3:3.10"
+    implementation "commons-io:commons-io:2.7"
+    implementation "org.apache.commons:commons-math3:3.6.1"
+}
+
+jar {
+
+    manifest {
+
+        attributes 'Candor-Module-Class': "uk.co.innoxium.candor.dragonage.DAModule"
+    }
+}
