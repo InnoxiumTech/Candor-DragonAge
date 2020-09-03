@@ -1,8 +1,9 @@
 package uk.co.innoxium.candor.dragonage
 
-import me.shadowchild.candor.module.AbstractModInstaller
-import me.shadowchild.candor.module.AbstractModule
-import me.shadowchild.candor.module.RunConfig
+import uk.co.innoxium.candor.Settings
+import uk.co.innoxium.candor.module.AbstractModInstaller
+import uk.co.innoxium.candor.module.AbstractModule
+import uk.co.innoxium.candor.module.RunConfig
 import java.io.File
 import javax.swing.filechooser.FileSystemView
 
@@ -12,7 +13,7 @@ class DAModule : AbstractModule() {
 
     override fun getGame(): File {
 
-        return game!!;
+        return game!!
     }
 
     override fun getModsFolder(): File {
@@ -55,11 +56,27 @@ class DAModule : AbstractModule() {
 
     override fun getModFileFilterList(): String {
 
-        return "7z"
+        return "7z,zip"
     }
 
     override fun getDefaultRunConfig(): RunConfig? {
 
-        return null
+        return object : RunConfig() {
+
+            override fun getStartCommand(): String {
+
+                return Settings.gameExe
+            }
+
+            override fun getProgramArgs(): String {
+
+                return ""
+            }
+
+            override fun getWorkingDir(): String? {
+
+                return null
+            }
+        }
     }
 }
