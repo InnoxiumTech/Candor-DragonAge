@@ -1,9 +1,12 @@
 package uk.co.innoxium.candor.dragonage
 
+import com.github.f4b6a3.uuid.util.UuidConverter
 import uk.co.innoxium.candor.Settings
+import uk.co.innoxium.candor.game.GamesList
 import uk.co.innoxium.candor.module.AbstractModInstaller
 import uk.co.innoxium.candor.module.AbstractModule
 import uk.co.innoxium.candor.module.RunConfig
+import uk.co.innoxium.cybernize.archive.ArchiveItem
 import java.io.File
 import javax.swing.filechooser.FileSystemView
 
@@ -56,7 +59,7 @@ class DAModule : AbstractModule() {
 
     override fun getModFileFilterList(): String {
 
-        return "7z,zip"
+        return "7z,zip,rar"
     }
 
     override fun getDefaultRunConfig(): RunConfig? {
@@ -65,7 +68,9 @@ class DAModule : AbstractModule() {
 
             override fun getStartCommand(): String {
 
-                return Settings.gameExe
+                val game = GamesList.getGameFromUUID(UuidConverter.fromString(Settings.lastGameUuid))
+
+                return game.gameExe
             }
 
             override fun getProgramArgs(): String {
@@ -78,5 +83,11 @@ class DAModule : AbstractModule() {
                 return null
             }
         }
+    }
+
+    override fun isCritical(archiveItem: ArchiveItem): Boolean {
+
+        return archiveItem.isDirectory &&
+                (archiveItem.filePath.endsWith("override") || archiveItem.filePath.endsWith("core") || archiveItem.filePath.endsWith("packages"))
     }
 }
