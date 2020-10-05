@@ -59,7 +59,7 @@ class DAModule : AbstractModule() {
 
     override fun getModFileFilterList(): String {
 
-        return "7z,zip,rar"
+        return "7z,zip,rar,dazip"
     }
 
     override fun getDefaultRunConfig(): RunConfig? {
