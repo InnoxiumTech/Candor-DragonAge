@@ -47,6 +47,12 @@ dependencies {
 
     implementation "net.sf.sevenzipjbinding:sevenzipjbinding:${project.ext.sevenZipVersion}"
     implementation "net.sf.sevenzipjbinding:sevenzipjbinding-all-platforms:${project.ext.sevenZipVersion}"
+
+    // Additional libraries just for us
+    implementation('org.dom4j:dom4j:2.1.3') {
+        exclude group: 'xpp3', module: 'xpp3'
+        exclude group: 'pull-parser', module: 'pull-parser'
+    }
 }
 
 jar {

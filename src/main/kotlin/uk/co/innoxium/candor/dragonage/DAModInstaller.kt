@@ -86,6 +86,6 @@ class DAModInstaller(module: AbstractModule?) : AbstractModInstaller(module) {
 
     private fun installDAZip(mod: Mod?): Boolean {
 
-
+        return false
     }
 }
