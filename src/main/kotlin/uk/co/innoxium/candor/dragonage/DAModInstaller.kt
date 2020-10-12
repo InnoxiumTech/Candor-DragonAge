@@ -1,32 +1,19 @@
 package uk.co.innoxium.candor.dragonage
 
-import com.google.gson.JsonArray
 import org.apache.commons.io.FileUtils
-import org.dom4j.Document
-import org.dom4j.Element
-import org.dom4j.Node
-import org.dom4j.io.OutputFormat
-import org.dom4j.io.SAXReader
-import org.dom4j.io.XMLWriter
 import uk.co.innoxium.candor.dragonage.dazip.DAZipInstaller
 import uk.co.innoxium.candor.mod.Mod
 import uk.co.innoxium.candor.module.AbstractModInstaller
 import uk.co.innoxium.candor.module.AbstractModule
 import uk.co.innoxium.candor.util.Utils
+import uk.co.innoxium.candor.util.WindowUtils
 import uk.co.innoxium.cybernize.archive.Archive
 import uk.co.innoxium.cybernize.archive.ArchiveBuilder
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileWriter
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import java.util.zip.ZipFile
-import java.util.zip.ZipInputStream
+import javax.swing.ProgressMonitor
 
 
 class DAModInstaller(module: AbstractModule?) : AbstractModInstaller(module) {
-
-    private val daZipInstaller = DAZipInstaller(module as DAModule);
 
     override fun canInstall(mod: Mod): Boolean {
 
@@ -34,6 +21,15 @@ class DAModInstaller(module: AbstractModule?) : AbstractModInstaller(module) {
     }
 
     override fun install(mod: Mod): Boolean {
+
+        val monitor = ProgressMonitor(WindowUtils.mainFrame,
+                                        String.format("Installing Mod: %s", mod.readableName),
+                                        String.format("Installing file: %s", mod.readableName),
+                                        0, 100)
+        monitor.millisToPopup = 0
+        monitor.millisToDecideToPopup = 0
+
+        val daZipInstaller = DAZipInstaller(module as DAModule, monitor)
 
         return if(mod.file?.extension.equals("dazip", ignoreCase = true)) {
 
@@ -54,6 +50,7 @@ class DAModInstaller(module: AbstractModule?) : AbstractModInstaller(module) {
 
     override fun uninstall(mod: Mod): Boolean {
 
+
         // Always remove associated files
         mod.associatedFiles!!.forEach {
 
@@ -64,6 +61,7 @@ class DAModInstaller(module: AbstractModule?) : AbstractModInstaller(module) {
         // If the mod is a dazip, we need to remove the manifest items
         if(Utils.getExtension(mod.file).equals("dazip", ignoreCase = true)) {
 
+            val daZipInstaller = DAZipInstaller(module as DAModule, null)
             daZipInstaller.removeManifestItems(mod)
         }
         return true

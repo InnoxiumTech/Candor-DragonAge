@@ -15,32 +15,48 @@ import java.io.FileWriter
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.zip.ZipFile
+import javax.swing.ProgressMonitor
 
-class DAZipInstaller(private val module: DAModule) {
+// We only need to set a progress monitor if we are installing, we can try for uninstalling later
+class DAZipInstaller(private val module: DAModule, private val monitor: ProgressMonitor?) {
 
     fun installDAZip(mod: Mod): Boolean {
 
         // Create backup of addins
         val modsFolder = module.modsFolder
+        monitor!!.note = "Making backup of AddIns.xml"
+        monitor.setProgress(5)
         FileUtils.copyFile(File(modsFolder, "Settings/AddIns.xml"), File(modsFolder, "Settings/AddIns.xml.bak"))
 
         // Copy Files
         copyDaZipFiles(mod)
 
         // Merge Manifest
-        return mergeManifest(mod)
+        val success = mergeManifest(mod)
+
+        monitor.note = "Mod installed successfully."
+        monitor.setProgress(100)
+
+        monitor.close()
+        return success
     }
 
     private fun mergeManifest(mod: Mod): Boolean {
 
+        monitor!!.note = "Reading AddIns.xml and mod Manifest.xml"
+        monitor.setProgress(80)
         // The "<AddInsList>" node in the mod Manifest.xml
         val manifestNode = getModManifest(mod)
         // The "<AddInsList>" node in the game AddIns.xml
         val addInsElement = getAddInsElement()
 
+        monitor.note = "Adding Contents of Mod Manifest to AddIns.xml"
+        monitor.setProgress(85)
         // Add the content of the mod Manifest, to the game AddIns.xml
         addInsElement.appendContent(manifestNode as Element)
 
+        monitor.note = "Flushing AddIns to disk"
+        monitor.setProgress(95)
         // Write the changes to disk
         writeAddIns(addInsElement)
 
@@ -98,11 +114,15 @@ class DAZipInstaller(private val module: DAModule) {
         println(tmpFolder.toAbsolutePath())
 
         // Create an archive for easier extracting
+        monitor!!.note = "Extracting contents of DAZip."
+        monitor.setProgress(50)
         val modArchive = ArchiveBuilder(mod.file).outputDirectory(tmpFolder.toFile()).type(ArchiveBuilder.ArchiveType.SEVEN_ZIP).build()
         modArchive.extract()
         // Get the contents of the mod and build a json array of them
         val modContents = File(tmpFolder.toFile(), "Contents")
         val array = JsonArray()
+        monitor.note = "Identifying addins/overrides."
+        monitor.setProgress(60)
         for(item in modArchive.allArchiveItems) {
 
             // ignore manifest.xml
@@ -113,9 +133,13 @@ class DAZipInstaller(private val module: DAModule) {
             }
         }
         // Now copy the the files to the final destination
+        monitor.note = "Copying mod files."
+        monitor.setProgress(65)
         FileUtils.copyDirectory(modContents, module.modsFolder)
         mod.associatedFiles = array
         // Delete the temp folder
+        monitor.note = "Cleaning up after ourselves."
+        monitor.setProgress(75)
         FileUtils.deleteDirectory(tmpFolder.toFile())
     }
 
