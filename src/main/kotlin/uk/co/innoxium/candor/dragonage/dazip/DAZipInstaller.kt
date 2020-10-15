@@ -12,6 +12,7 @@ import uk.co.innoxium.candor.mod.Mod
 import uk.co.innoxium.cybernize.archive.ArchiveBuilder
 import java.io.File
 import java.io.FileWriter
+import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.zip.ZipFile
@@ -102,9 +103,19 @@ class DAZipInstaller(private val module: DAModule, private val monitor: Progress
         // Add these to an XML writer
         val xmlWriter = XMLWriter(outWiter, format)
         // Write to the file, flush, and close
-        xmlWriter.write(addIns.document)
-        xmlWriter.flush()
-        xmlWriter.close()
+        try {
+
+            xmlWriter.write(addIns.document)
+            xmlWriter.flush()
+        } catch (e: IOException) {
+
+            // Hopefully we can now mitigate issues with writing bad data
+            val modsFolder = module.modsFolder
+            FileUtils.copyFile(File(modsFolder, "Settings/AddIns.xml.bak"), File(modsFolder, "Settings/AddIns.xml"))
+        } finally {
+
+            xmlWriter.close()
+        }
     }
 
     private fun copyDaZipFiles(mod: Mod) {
