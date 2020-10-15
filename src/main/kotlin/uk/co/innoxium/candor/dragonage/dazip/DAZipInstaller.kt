@@ -126,7 +126,12 @@ class DAZipInstaller(private val module: DAModule, private val monitor: Progress
         for(item in modArchive.allArchiveItems) {
 
             // ignore manifest.xml
-            if(!(item.filePath.toLowerCase().endsWith("manifest.xml"))) {
+            if(!(item.filePath.toLowerCase().endsWith("manifest.xml")
+                        ||
+                        (item.isDirectory && (item.filePath.toLowerCase().startsWith("contents")
+                        || item.filePath.toLowerCase().startsWith("addins")
+                        || item.filePath.toLowerCase().startsWith("packages")))
+                        )){
 
                 // Remove the "Contents\" at the start of the string, otherwise the files will never be deleted
                 array.add(item.filePath.replace("Contents\\", ""))

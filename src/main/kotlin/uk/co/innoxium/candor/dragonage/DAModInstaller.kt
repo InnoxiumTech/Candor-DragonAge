@@ -55,8 +55,20 @@ class DAModInstaller(module: AbstractModule?) : AbstractModInstaller(module) {
         mod.associatedFiles!!.forEach {
 
             val toDelete = File(module.modsFolder, it.asString)
-            println("DAI: Deleting file - " + toDelete.absolutePath)
-            FileUtils.deleteQuietly(toDelete)
+            var shouldDelete = true
+            if(toDelete.isDirectory &&
+                (it.asString.toLowerCase().startsWith("contents")
+                        || it.asString.toLowerCase().startsWith("addins")
+                        || it.asString.toLowerCase().startsWith("packages"))) {
+
+                shouldDelete = false
+            }
+
+            if(shouldDelete) {
+
+                FileUtils.deleteQuietly(toDelete)
+                println("DAI: Deleting file - " + toDelete.absolutePath)
+            }
         }
         // If the mod is a dazip, we need to remove the manifest items
         if(Utils.getExtension(mod.file).equals("dazip", ignoreCase = true)) {
