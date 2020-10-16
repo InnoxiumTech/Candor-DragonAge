@@ -10,9 +10,7 @@ import org.dom4j.io.XMLWriter
 import uk.co.innoxium.candor.dragonage.DAModule
 import uk.co.innoxium.candor.mod.Mod
 import uk.co.innoxium.cybernize.archive.ArchiveBuilder
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
+import java.io.*
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.zip.ZipFile
@@ -96,15 +94,20 @@ class DAZipInstaller(private val module: DAModule, private val monitor: Progress
 
         // Define the file we will write to
         val file = File(module.modsFolder, "Settings/AddIns.xml")
-        // Create writer and format
-        val outWiter = FileWriter(file)
+        // Create writer and format - DO NOT use a FileWriter, the you cannot change it's file encoding
+        val writer = OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8)
+//        val outWriter = FileWriter(file)
+        println("Filewriter encoding is: " + writer.encoding)
         val format = OutputFormat()
-        format.encoding = StandardCharsets.UTF_8.name()
+        format.encoding = "UTF-8"
         // Add these to an XML writer
-        val xmlWriter = XMLWriter(outWiter, format)
+        val xmlWriter = XMLWriter(writer, format)
         // Write to the file, flush, and close
         try {
 
+            println("Document encoding is: " + addIns.document.xmlEncoding)
+            addIns.document.xmlEncoding = "UTF-8"
+            addIns.document.normalize()
             xmlWriter.write(addIns.document)
             xmlWriter.flush()
         } catch (e: IOException) {
@@ -201,6 +204,9 @@ class DAZipInstaller(private val module: DAModule, private val monitor: Progress
     private fun getSAXReader(): SAXReader {
 
         val saxReader = SAXReader.createDefault()
+        saxReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", true)
+        saxReader.setFeature("http://xml.org/sax/features/external-general-entities", true)
+        saxReader.setFeature("http://xml.org/sax/features/external-parameter-entities", true)
         saxReader.encoding = StandardCharsets.UTF_8.name()
         return saxReader
     }
