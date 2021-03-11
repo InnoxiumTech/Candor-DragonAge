@@ -64,7 +64,7 @@ class DAModule : AbstractModule() {
 
     override fun getDefaultRunConfig(): RunConfig? {
 
-        return object : RunConfig() {
+        return object : RunConfig("default") {
 
             override fun getStartCommand(): String {
 
