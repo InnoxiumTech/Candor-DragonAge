@@ -2,6 +2,7 @@ package uk.co.innoxium.candor.dragonage
 
 import com.github.f4b6a3.uuid.util.UuidConverter
 import uk.co.innoxium.candor.Settings
+import uk.co.innoxium.candor.game.Game
 import uk.co.innoxium.candor.game.GamesList
 import uk.co.innoxium.candor.module.AbstractModInstaller
 import uk.co.innoxium.candor.module.AbstractModule
@@ -40,6 +41,12 @@ class DAModule : AbstractModule() {
     override fun getReadableGameName(): String {
 
         return "Dragon Age: Origins"
+    }
+
+    override fun getReadableGameName(game: Game?): String {
+
+        // TODO: check whether game is DA: O or DA: 2
+        return readableGameName
     }
 
     override fun getModInstaller(): AbstractModInstaller {
