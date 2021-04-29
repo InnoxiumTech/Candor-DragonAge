@@ -1,0 +1,23 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: uk.co.innoxium.candor:candor-api
+    versions:
+    - 0.3.0-pre
+    - 0.3.0-pre2
+    - 0.3.0-pre3
+  - dependency-name: org.jetbrains.kotlin.jvm
+    versions:
+    - 1.4.21-2
+    - 1.4.30
+  - dependency-name: junit:junit
+    versions:
+    - 4.13.1
+  - dependency-name: org.apache.commons:commons-lang3
+    versions:
+    - "3.11"
