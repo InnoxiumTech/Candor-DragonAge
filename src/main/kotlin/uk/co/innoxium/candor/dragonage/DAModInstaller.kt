@@ -9,7 +9,9 @@ import uk.co.innoxium.candor.util.Utils
 import uk.co.innoxium.candor.util.WindowUtils
 import uk.co.innoxium.cybernize.archive.Archive
 import uk.co.innoxium.cybernize.archive.ArchiveBuilder
+import java.awt.Dialog
 import java.io.File
+import javax.swing.JDialog
 import javax.swing.ProgressMonitor
 
 
@@ -44,7 +46,13 @@ class DAModInstaller(module: AbstractModule?) : AbstractModInstaller(module) {
             true
         } else {
 
-            installStandardMod(mod)
+            if(installStandardMod(mod, monitor)) {
+
+                monitor.setProgress(100)
+                monitor.note = "Finished installing"
+                return true
+            }
+            return false
         }
     }
 
@@ -115,8 +123,10 @@ class DAModInstaller(module: AbstractModule?) : AbstractModInstaller(module) {
     }
 
     // Standard archive mod
-    private fun installStandardMod(mod: Mod): Boolean {
+    private fun installStandardMod(mod: Mod, monitor: ProgressMonitor): Boolean {
 
+        monitor.setProgress(0)
+        monitor.note = "Installing: This could take a while...";
         val randomAccessArchive = ArchiveBuilder(mod.file).build()
         val outputDir = File(module.modsFolder, getOutputDirForMod(randomAccessArchive))
         val archive = ArchiveBuilder(mod.file).outputDirectory(outputDir).build()
